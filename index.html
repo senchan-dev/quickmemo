@@ -81,7 +81,9 @@
     memo.focus();
 
     memo.addEventListener('input', () => {
-      charCount.textContent = `${memo.value.length}文字`;
+      const text = memo.value;
+      const count = text.replace(/\n/g, '').length; // 改行を除外
+      charCount.textContent = `${count}文字`;
     });
 
     copyBtn.addEventListener('click', () => {
