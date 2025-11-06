@@ -1,121 +1,146 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <title>Quick Memo</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <style>
-    body {
-      background: #1e1e1e;
-      color: #eee;
-      font-family: sans-serif;
-      margin: 0;
-      padding: 1em;
-    }
-    .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
-      margin-bottom: 1em;
-    }
-    .divider {
-      width: 1px;
-      height: 2em;
-      background: #555;
-    }
-    button {
-      background: transparent;
-      border: none;
-      color: #eee;
-      cursor: pointer;
-      font-size: 1.2em;
-      padding: 0.3em;
-    }
-    button:hover {
-      color: #ccc;
-    }
-    textarea {
-      width: 100%;
-      height: 60vh;
-      background: #1e1e1e;
-      color: #eee;
-      border: none;
-      padding: 1em;
-      font-size: 16px;
-      resize: none;
-    }
-    textarea:focus {
-      outline: none;
-    }
-    footer {
-      margin-top: 0.5em;
-      font-size: 0.9em;
-      color: #aaa;
-      text-align: center;
-    }
-    a {
-      color: #aaa;
-    }
-  </style>
-</head>
-<body>
-  <div class="toolbar">
-    <button id="cutBtn"><span class="material-icons">content_cut</span></button>
-    <button id="copyBtn"><span class="material-icons">content_copy</span></button>
-    <div class="divider"></div>
-    <button id="undoBtn"><span class="material-icons">undo</span></button>
-    <button id="redoBtn"><span class="material-icons">redo</span></button>
-    <div class="divider"></div>
-    <button id="clearBtn"><span class="material-icons">delete</span></button>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Quick Memo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: #1e1e1e;
+        color: #eee;
+        font-family: monospace;
+        display: flex;
+        flex-direction: column;
+      }
+      #controls {
+        display: flex;
+        justify-content: flex-start;
+        padding: 0.5em;
+        gap: 0.5em;
+      }
+      .divider {
+        width: 1px;
+        height: 2em;
+        background: #555;
+      }
+      button {
+        background: none;
+        border: none;
+        color: #eee;
+        font-size: 24px;
+        cursor: pointer;
+      }
+      button:hover {
+        color: #ccc;
+      }
+      textarea {
+        flex: 1;
+        width: 100%;
+        padding: 1em;
+        box-sizing: border-box;
+        border: none;
+        resize: none;
+        outline: none;
+        background: #1e1e1e;
+        color: #eee;
+        font-size: 16px;
+      }
+      #footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5em 1em;
+        font-size: 14px;
+        background: #121212;
+      }
+      a {
+        color: #aaa;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="controls">
+      <button id="cutBtn" title="切り取り">
+        <span class="material-icons">content_cut</span>
+      </button>
+      <button id="copyBtn" title="コピー">
+        <span class="material-icons">content_copy</span>
+      </button>
+      <div class="divider"></div>
+      <button id="undoBtn" title="元に戻す">
+        <span class="material-icons">undo</span>
+      </button>
+      <button id="redoBtn" title="やり直し">
+        <span class="material-icons">redo</span>
+      </button>
+      <div class="divider"></div>
+      <button id="clearBtn" title="全削除">
+        <span class="material-icons">delete</span>
+      </button>
+    </div>
+    <textarea id="memo" placeholder="ここにメモを書いてください…"></textarea>
+    <div id="footer">
+      <span id="charCount">0文字</span>
+      <a href="https://github.com/senchan-dev/quickmemo" target="_blank"
+        >GitHub</a
+      >
+      v1.3
+    </div>
 
-  <textarea id="memo" placeholder="メモを入力..."></textarea>
+    <script>
+      const memo = document.getElementById("memo");
+      const charCount = document.getElementById("charCount");
+      const copyBtn = document.getElementById("copyBtn");
+      const clearBtn = document.getElementById("clearBtn");
+      const cutBtn = document.getElementById("cutBtn");
+      const undoBtn = document.getElementById("undoBtn");
+      const redoBtn = document.getElementById("redoBtn");
 
-  <footer>
-    <span id="charCount">0文字</span> | <a href="https://github.com/your-repo">GitHub</a> | v1.3
-  </footer>
-
-  <script>
-    const memo = document.getElementById('memo');
-    const charCount = document.getElementById('charCount');
-    const copyBtn = document.getElementById('copyBtn');
-    const cutBtn = document.getElementById('cutBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const undoBtn = document.getElementById('undoBtn');
-    const redoBtn = document.getElementById('redoBtn');
-
-    memo.focus();
-
-    memo.addEventListener('input', () => {
-      const count = memo.value.replace(/\n/g, '').length;
-      charCount.textContent = `${count}文字`;
-    });
-
-    copyBtn.addEventListener('click', () => {
-      memo.select();
-      document.execCommand('copy');
-    });
-
-    cutBtn.addEventListener('click', () => {
-      memo.select();
-      document.execCommand('copy');
-      memo.value = '';
-      charCount.textContent = '0文字';
-    });
-
-    clearBtn.addEventListener('click', () => {
-      memo.value = '';
-      charCount.textContent = '0文字';
       memo.focus();
-    });
 
-    undoBtn.addEventListener('click', () => {
-      document.execCommand('undo');
-    });
+      memo.addEventListener("input", () => {
+        const text = memo.value;
+        const count = text.replace(/\n/g, "").length; // 改行を除外
+        charCount.textContent = `${count}文字`;
+      });
 
-    redoBtn.addEventListener('click', () => {
-      document.execCommand('redo');
-    });
-  </script>
-</body>
+      copyBtn.addEventListener("click", () => {
+        memo.select();
+        document.execCommand("copy");
+      });
+
+      clearBtn.addEventListener("click", () => {
+        memo.value = "";
+        charCount.textContent = "0文字";
+        memo.focus();
+      });
+
+      cutBtn.addEventListener("click", () => {
+        memo.select();
+        document.execCommand("copy");
+        memo.value = "";
+        charCount.textContent = "0文字";
+      });
+
+      undoBtn.addEventListener("click", () => {
+        document.execCommand("undo");
+      });
+
+      redoBtn.addEventListener("click", () => {
+        document.execCommand("redo");
+      });
+    </script>
+  </body>
 </html>
